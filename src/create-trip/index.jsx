@@ -6,6 +6,7 @@ import { AI_PROMPT, SelectBudget, SelectTravelersList } from '@/constants/Option
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { generateTravelPlan } from '../service/aimodel';
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import {
   Dialog,
   DialogContent,
@@ -17,6 +18,9 @@ import {
 import { FcGoogle } from "react-icons/fc";
 import { useGoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
+import { setDoc, doc } from 'firebase/firestore';
+import { db } from '@/service/firebaseConfig';
+import { useNavigate } from 'react-router-dom';
 
 const CreateTrip = () => {
   const [place, setPlace] = useState();
@@ -24,6 +28,10 @@ const CreateTrip = () => {
   const [formData, setFormData] = useState([]);
 
   const [openDialog, setOpenDialog] = useState(false);
+
+  const [loading, setLoading] = useState(false);
+
+  const navigate=useNavigate()
 
   const handleInputChange = (name, value) => {
     setFormData({
@@ -36,52 +44,69 @@ const CreateTrip = () => {
     console.log(formData)
   }, [formData])
 
-  const login=useGoogleLogin({
-    onSuccess:(codeResp)=>GetUserProfile(codeResp),
-    onError:(error)=>console.log(error)
+  const login = useGoogleLogin({
+    onSuccess: (codeResp) => GetUserProfile(codeResp),
+    onError: (error) => console.log(error)
   })
 
   const onGenerateTrip = async () => {
 
-    const user=localStorage.getItem('user');
+    const user = localStorage.getItem('user');
 
     if (!user) {
       setOpenDialog(true);
       return;
     }
 
-      
-      if (formData?.noOfDays > 10 && !formData?.location || !formData?.budget || !formData?.noOfTraveller) {
-        toast("Please fill all the details")
-      } else {
-        
-        const FINAL_PROMPT = AI_PROMPT
+
+    if (formData?.noOfDays > 10 && !formData?.location || !formData?.budget || !formData?.noOfTraveller) {
+      toast("Please fill all the details")
+    } else {
+      setLoading(true);
+      const FINAL_PROMPT = AI_PROMPT
         .replace('{location}', formData?.location?.label)
         .replace('{totalDays}', formData?.noOfDays)
         .replace('{traveller}', formData?.noOfTraveller)
         .replace('{budget}', formData?.budget)
         .replace('{totalDays}', formData?.noOfDays)
-        
-        console.log(FINAL_PROMPT);
-        
-        const result = await generateTravelPlan(FINAL_PROMPT);
-        console.log("Gemini Response:", result);
-        
-      
+
+
+
+      const result = await generateTravelPlan(FINAL_PROMPT);
+      console.log("Gemini Response:", result);
+      setLoading(false);
+      SaveAiTrip(result)
+
     }
   }
 
-  const GetUserProfile=(tokenInfo)=>{
-    axios.get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${tokenInfo?.access_token}`,{
-      headers:{
-        Authorization:`Bearer ${tokenInfo?.access_token}`,
-        Accept:'Application/json'
-      }}).then((resp)=>{
-        console.log(resp);
-        localStorage.setItem('user',JSON.stringify(resp.data))
-        setOpenDialog(false);
-        onGenerateTrip();
-      })
+  const SaveAiTrip = async (TripData) => {
+    setLoading(true);
+    const user = JSON.parse(localStorage.getItem('user'))
+    const docId = Date.now().toString()
+    await setDoc(doc(db, "AITrips", docId), {
+      userSelection: formData,
+      tripData: JSON.parse(TripData),
+      userEmail: user?.email,
+      id: docId,
+    });
+    setLoading(false);
+    navigate('/view-trip/'+docId)
+
+  }
+
+  const GetUserProfile = (tokenInfo) => {
+    axios.get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${tokenInfo?.access_token}`, {
+      headers: {
+        Authorization: `Bearer ${tokenInfo?.access_token}`,
+        Accept: 'Application/json'
+      }
+    }).then((resp) => {
+      console.log(resp);
+      localStorage.setItem('user', JSON.stringify(resp.data))
+      setOpenDialog(false);
+      onGenerateTrip();
+    })
   }
   return (
     <div className='sm:px-10 md:px-32 lg:px-56 xl:px-10 px-5 mt-10'>
@@ -141,21 +166,27 @@ const CreateTrip = () => {
       </div>
 
       <div className='my-10 justify-end flex'>
-        <Button className="hover: cursor-pointer" onClick={onGenerateTrip}>Generate Trip</Button>
+        <Button disabled={loading} className="hover: cursor-pointer" onClick={onGenerateTrip}>
+          {loading ?
+            <AiOutlineLoading3Quarters className="h-7 w-7 animate-spin" /> : 'Generate Trip'
+          }
+        </Button>
       </div>
 
       <Dialog open={openDialog}>
         <DialogContent>
           <DialogHeader>
             <DialogDescription>
-              <img className='w-10' src='/logo.svg'/>
+              <img className='w-10' src='/logo.svg' />
               <h2 className='font-bold text-lg mt-7'>Sign In with Google</h2>
               <p>Sign In to the app to proceed with Google authentication securely!</p>
-              <Button 
+              <Button
                 onClick={login}
-              className='w-full mt-5 flex gap-4 itms-center hover:cursor-pointer'>
-                <FcGoogle/>
-                Sign In with Google</Button>
+                className='w-full mt-5 flex gap-4 itms-center hover:cursor-pointer'>
+
+                <FcGoogle />
+                Sign In with Google
+              </Button>
             </DialogDescription>
           </DialogHeader>
         </DialogContent>
