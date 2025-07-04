@@ -45,4 +45,59 @@ import { icons } from "lucide-react"
     },
  ]
 
- export const AI_PROMPT="Generate Travel Plan for the Location: {location}, for {totalDays} Days for {traveller} with a {budget} budget, give me Hotels options list with HotelName, Hotel address, price, hotel image url, geo coordinates, rating, descriptions and suggest itinerary with placeName Place Details, Place image url, geo coordinates, ticket pricing, time travel each of the location for {totalDays} days with each day plan with best time to visit in JSON format."
+export const AI_PROMPT = `
+Generate a detailed travel plan for:
+- Location: {location}
+- Duration: {totalDays} days
+- Budget: {budget}
+- Traveler Type: {traveller}
+
+Return the output ONLY in this JSON format:
+
+{
+  "travelPlan": {
+    "location": "string",
+    "duration": "string",
+    "travelerType": "string",
+    "budget": "string",
+    "bestTimeToVisit": "string",
+    "hotelOptions": [
+      {
+        "name": "string",
+        "animationEffect": "string",
+        "address": "string",
+        "price": "string",
+        "imageUrl": "string",
+        "geolocation": {
+          "latitude": number,
+          "longitude": number
+        },
+        "rating": number,
+        "description": "string"
+      }
+    ],
+    "dailyItinerary": [
+      {
+        "day": number,
+        "theme": "string",
+        "activities": [
+          {
+            "time": "string",
+            "placeName": "string",
+            "placeDetails": "string",
+            "imageUrl": "string",
+            "geolocation": {
+              "latitude": number,
+              "longitude": number
+            },
+            "ticketInfo": "string",
+            "timeToTravel": "string"
+          }
+        ]
+      }
+    ]
+  }
+}
+
+DO NOT include extra explanation or markdown — just return the raw JSON object.
+`;

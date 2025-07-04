@@ -73,9 +73,19 @@ const CreateTrip = () => {
 
 
       const result = await generateTravelPlan(FINAL_PROMPT);
-      console.log("Gemini Response:", result);
-      setLoading(false);
-      SaveAiTrip(result)
+const text = result?.response?.text();
+
+console.log("Gemini Response:", text);
+
+if (!result) {
+  toast.error("⚠️ AI did not return a valid JSON plan");
+  setLoading(false);
+  return;
+}
+console.log("Gemini Response:", result);   // already parsed
++ await SaveAiTrip(result);
+
+   setLoading(false);
 
     }
   }
@@ -86,7 +96,7 @@ const CreateTrip = () => {
     const docId = Date.now().toString()
     await setDoc(doc(db, "AITrips", docId), {
       userSelection: formData,
-      tripData: JSON.parse(TripData),
+      tripData: TripData,
       userEmail: user?.email,
       id: docId,
     });
