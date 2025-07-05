@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { AI_PROMPT, SelectBudget, SelectTravelersList } from '@/constants/Options';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { generateTravelPlan } from '../service/aimodel';
+import { generateTravelPlan } from '../service/AImodel';
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import {
   Dialog,
