@@ -13,6 +13,11 @@ const Hero = () => {
         <Link to={'/create-trip'}>
         <Button>Click here to Start, It's Free.</Button>
         </Link>
+
+        <div className=''>
+          <img src="/banner.jpg" alt="" />
+        </div>
+
     </div>
   )
 }

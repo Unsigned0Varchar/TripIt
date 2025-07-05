@@ -49,15 +49,22 @@ const Header = () => {
 
   return (
     <div className='p-3 shadow-sm flex justify-between items-center px-5'>
-
+      <a href='/'>
       <img
         src={logo}
         alt="logo_image"
         className="p-2 w-18 h-auto"
       />
+      <p className='text-center font-bold text-blue-900 text-lg'>TripIt</p>
+      </a>
       <div>
         {users ?
           <div className='flex items-center gap-3'>
+            
+            <a href='/create-trip'>
+            <Button variant='outline' className='rounded-full'>+ Create Trips</Button>
+            </a>
+            
             <a href='/my-trips'>
             <Button variant='outline' className='rounded-full'>My Trips</Button>
             </a>

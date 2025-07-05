@@ -33,10 +33,10 @@ const PlaceCardItem = ({ place }) => {
 
   return (
     <a href={mapUrl} target="_blank" rel="noopener noreferrer">
-      <div className="border rounded-xl p-3 mt-2 flex gap-3 hover:scale-105 transition-all hover:shadow-md cursor-pointer">
+      <div className="border rounded-xl p-3 mt-2 flex gap-3 hover:scale-105 transition-all hover:shadow-md cursor-pointer ">
         <img
           src={photoUrl || '/Placeholder.jpg'}
-          className="w-[100px] h-[100px] rounded-xl object-cover"
+          className="w-[100px] h-[100px] rounded-xl object-cover "
           onError={(e) => (e.currentTarget.src = '/Placeholder.jpg')}
           alt={place.placeName}
         />

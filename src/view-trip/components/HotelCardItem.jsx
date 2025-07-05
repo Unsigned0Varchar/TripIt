@@ -39,7 +39,7 @@ const HotelCardItem = ({ hotel }) => {
       <div className="hover:scale-103 transition-all cursor-pointer">
         <img
           src={photoUrl || '/Placeholder.jpg'}
-          className="rounded-xl"
+          className="rounded-xl sm:h-50 w-50"
           alt={hotel?.name}
           onError={(e) => (e.currentTarget.src = '/Placeholder.jpg')}
         />
