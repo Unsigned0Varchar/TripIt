@@ -1,6 +1,8 @@
 import React from 'react'
 import { Button } from '../ui/button'
 import { Link } from 'react-router-dom'
+import { SiGooglegemini } from "react-icons/si";
+import { FcGoogle } from "react-icons/fc";
 
 const Hero = () => {
   return (
@@ -14,10 +16,14 @@ const Hero = () => {
         <Button>Click here to Start, It's Free.</Button>
       </Link>
 
-
-
+      <p className="flex items-center gap-1">
+        Powered by<FcGoogle /> Google Gemini AI 2.5 Pro <SiGooglegemini />
+      </p>
     </div>
   )
 }
 
 export default Hero
+
+
+
