@@ -31,7 +31,7 @@ const CreateTrip = () => {
 
   const [loading, setLoading] = useState(false);
 
-  const navigate=useNavigate()
+  const navigate = useNavigate()
 
   const handleInputChange = (name, value) => {
     setFormData({
@@ -73,19 +73,19 @@ const CreateTrip = () => {
 
 
       const result = await generateTravelPlan(FINAL_PROMPT);
-const text = result?.response?.text();
+      const text = result?.response?.text();
 
-console.log("Gemini Response:", text);
+      console.log("Gemini Response:", text);
 
-if (!result) {
-  toast.error("⚠️ AI did not return a valid JSON plan");
-  setLoading(false);
-  return;
-}
-console.log("Gemini Response:", result);   // already parsed
-+ await SaveAiTrip(result);
+      if (!result) {
+        toast.error("⚠️ AI did not return a valid JSON plan");
+        setLoading(false);
+        return;
+      }
+      console.log("Gemini Response:", result);   // already parsed
+      + await SaveAiTrip(result);
 
-   setLoading(false);
+      setLoading(false);
 
     }
   }
@@ -101,7 +101,7 @@ console.log("Gemini Response:", result);   // already parsed
       id: docId,
     });
     setLoading(false);
-    navigate('/view-trip/'+docId)
+    navigate('/view-trip/' + docId)
 
   }
 
