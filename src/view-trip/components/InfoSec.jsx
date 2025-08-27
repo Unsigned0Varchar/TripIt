@@ -11,29 +11,31 @@ const InfoSec = ({ trip }) => {
         if (trip?.userSelection?.location?.label) {
             getPlacePhoto();
         }
-    }, [trip]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [trip?.userSelection?.location?.label]);
 
     const getPlacePhoto = async () => {
         try {
-            const data = { textQuery: trip.userSelection.location.label };
+            const data = { textQuery: trip?.userSelection?.location?.label };
             const resp = await GetPlaceDetails(data);
             const photoRef = resp?.data?.places?.[0]?.photos?.[0]?.name;
 
             if (photoRef) {
                 setPhotoUrl(PHOTO_REF_URL.replace("{NAME}", photoRef));
             } else {
-                console.warn("No photo found – using placeholder");
+                console.warn("⚠️ No photo found – using placeholder");
+                setPhotoUrl("/Placeholder.jpg");
             }
         } catch (err) {
-            console.error("Place photo fetch failed:", err);
+            console.error("❌ Place photo fetch failed:", err);
+            setPhotoUrl("/Placeholder.jpg");
         }
     };
 
-
     const handleShare = async () => {
         const shareData = {
-            title: `Trip to ${trip?.userSelection?.location?.label}`,
-            text: `Check out this ${trip?.userSelection?.noOfDays}-day trip plan to ${trip?.userSelection?.location?.label}!`,
+            title: `Trip to ${trip?.userSelection?.location?.label || "Unknown Location"}`,
+            text: `Check out this ${trip?.userSelection?.noOfDays || "X"}-day trip plan to ${trip?.userSelection?.location?.label || "this place"}!`,
             url: window.location.href,
         };
 
@@ -45,39 +47,42 @@ const InfoSec = ({ trip }) => {
                 toast.success("📋 Link copied to clipboard");
             }
         } catch (err) {
-            console.error("Sharing failed:", err);
+            console.error("❌ Sharing failed:", err);
+            toast.error("Sharing not supported on this device");
         }
     };
 
-
     return (
         <div>
+            {/* Destination Image */}
             <img
                 src={photoUrl}
                 className="h-[400px] w-full object-cover rounded-xl"
                 onError={(e) => (e.currentTarget.src = "/Placeholder.jpg")}
-                alt={trip?.userSelection?.location?.label}
+                alt={trip?.userSelection?.location?.label || "Destination"}
             />
 
-            <div className="flex justify-between items-center">
+            {/* Info Section */}
+            <div className="flex justify-between items-center flex-wrap gap-4">
                 <div className="my-5 flex flex-col gap-2">
                     <h2 className="font-bold text-2xl">
-                        {trip?.userSelection?.location?.label}
+                        {trip?.userSelection?.location?.label || "Destination"}
                     </h2>
 
-                    <div className="flex gap-5">
-                        <h2 className="p-1 px-3 bg-gray-200 rounded-full text-gray-500 text-xs md:text-md">
-                            📅 {trip.userSelection?.noOfDays} Days
-                        </h2>
-                        <h2 className="p-1 px-3 bg-gray-200 rounded-full text-gray-500 text-xs md:text-md">
-                            💵 {trip.userSelection?.budget} Budget
-                        </h2>
-                        <h2 className="p-1 px-3 bg-gray-200 rounded-full text-gray-500 text-xs md:text-md">
-                            🧳 Travellers: {trip.userSelection?.noOfTraveller}
-                        </h2>
+                    <div className="flex gap-3 flex-wrap">
+                        <span className="p-1 px-3 bg-gray-200 rounded-full text-gray-600 text-xs md:text-sm">
+                            📅 {trip?.userSelection?.noOfDays || "—"} Days
+                        </span>
+                        <span className="p-1 px-3 bg-gray-200 rounded-full text-gray-600 text-xs md:text-sm">
+                            💵 {trip?.userSelection?.budget || "—"} Budget
+                        </span>
+                        <span className="p-1 px-3 bg-gray-200 rounded-full text-gray-600 text-xs md:text-sm">
+                            🧳 Travellers: {trip?.userSelection?.noOfTraveller || "—"}
+                        </span>
                     </div>
                 </div>
 
+                {/* Buttons */}
                 <div className="flex gap-2">
                     <Button onClick={handleShare} className="flex items-center gap-1">
                         <LuShare /> Share
@@ -85,7 +90,7 @@ const InfoSec = ({ trip }) => {
                     <Button
                         onClick={() => {
                             navigator.clipboard.writeText(window.location.href);
-                            toast.success(" Link copied to clipboard!");
+                            toast.success("📋 Link copied to clipboard!");
                         }}
                         className="flex items-center gap-1"
                         variant="outline"

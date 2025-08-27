@@ -9,14 +9,12 @@ import DailyPlaces from '../components/DailyPlaces';
 import Footer from '@/components/Footer';
 
 const Viewtrip = () => {
-
   const { tripId } = useParams();
-
-  const [trip, setTrip] = useState([])
+  const [trip, setTrip] = useState([]);
 
   useEffect(() => {
     tripId && getTripData();
-  }, [tripId])
+  }, [tripId]);
 
   const getTripData = async () => {
     const docRef = doc(db, 'AITrips', tripId);
@@ -27,17 +25,18 @@ const Viewtrip = () => {
       setTrip(docSnap.data());
     } else {
       console.log("No such document");
-      toast("No Trip FOund!!");
+      toast("No Trip Found!!");
     }
-  }
+  };
+
   return (
-    <div className='p-10 md:px-20 lg:px-44 xl:px-56'>
+    <div className="px-4 py-6 sm:px-6 md:px-12 lg:px-20 xl:px-32 max-w-7xl mx-auto">
       <InfoSec trip={trip} />
       <Hotels trip={trip} />
       <DailyPlaces trip={trip} />
       <Footer trip={trip} />
     </div>
-  )
+  );
 }
 
-export default Viewtrip
+export default Viewtrip;

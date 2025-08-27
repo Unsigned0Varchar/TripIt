@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import logo from '/logo.svg';
 import { Button } from '../ui/button';
 import {
@@ -6,22 +6,17 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import { googleLogout } from '@react-oauth/google';
+import { googleLogout, useGoogleLogin } from '@react-oauth/google';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
-  DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog"
-import { useGoogleLogin } from '@react-oauth/google';
 import { FcGoogle } from "react-icons/fc";
 import axios from 'axios';
 
-
 const Header = () => {
-
   const users = JSON.parse(localStorage.getItem('user'));
   const [openDialog, setOpenDialog] = useState(false);
 
@@ -32,74 +27,98 @@ const Header = () => {
         Accept: 'Application/json'
       }
     }).then((resp) => {
-      console.log(resp);
       localStorage.setItem('user', JSON.stringify(resp.data))
       setOpenDialog(false);
       window.location.reload()
     })
   }
 
-
-
   const login = useGoogleLogin({
     onSuccess: (codeResp) => GetUserProfile(codeResp),
     onError: (error) => console.log(error)
   })
 
-
   return (
-    <div className='p-3 shadow-sm flex justify-between items-center px-5'>
-      <a href='/'>
+    <header className="p-3 shadow-sm flex justify-between items-center px-3 sm:px-5">
+      {/* Logo */}
+      <a href="/" className="flex flex-col items-center">
         <img
           src={logo}
-          alt="logo_image"
-          className="p-2 w-18 h-auto"
+          alt="logo"
+          className="w-12 sm:w-16 h-auto"
         />
-        <p className='text-center font-bold text-blue-900 text-lg'>TripIt</p>
+        <p className="font-bold text-blue-900 text-base sm:text-lg">TripIt</p>
       </a>
-      <div>
-        {users ?
-          <div className='flex items-center gap-3'>
 
-            <a href='/create-trip'>
-              <Button variant='outline' className='rounded-full'>+ Create Trips</Button>
+      {/* Right Side */}
+      <div className="flex items-center gap-3">
+        {users ? (
+          <div className="flex items-center gap-2 sm:gap-3">
+            <a href="/create-trip">
+              <Button variant="outline" size="sm" className="rounded-full text-sm sm:text-base">
+                + Create Trips
+              </Button>
             </a>
-
-            <a href='/my-trips'>
-              <Button variant='outline' className='rounded-full'>My Trips</Button>
+            <a href="/my-trips">
+              <Button variant="outline" size="sm" className="rounded-full text-sm sm:text-base">
+                My Trips
+              </Button>
             </a>
-
             <Popover>
-              <PopoverTrigger><img className='h-[35px] w-[35px] rounded-full' src={users?.picture} /></PopoverTrigger>
-              <PopoverContent><h2 className='cursor-pointer' onClick={() => {
-                googleLogout();
-                localStorage.clear();
-                window.location.reload();
-              }}>Log Out</h2></PopoverContent>
+              <PopoverTrigger>
+                <img
+                  className="h-8 w-8 sm:h-9 sm:w-9 rounded-full"
+                  src={users?.picture}
+                  alt="profile"
+                />
+              </PopoverTrigger>
+              <PopoverContent>
+                <h2
+                  className="cursor-pointer"
+                  onClick={() => {
+                    googleLogout();
+                    localStorage.clear();
+                    window.location.reload();
+                  }}
+                >
+                  Log Out
+                </h2>
+              </PopoverContent>
             </Popover>
-          </div> : <Button onClick={() => setOpenDialog(true)} className='cursor-pointer'>Sign in</Button>
-        }
+          </div>
+        ) : (
+          <Button
+            size="sm"
+            onClick={() => setOpenDialog(true)}
+            className="cursor-pointer text-sm sm:text-base"
+          >
+            Sign in
+          </Button>
+        )}
       </div>
-      <Dialog open={openDialog}>
+
+      {/* Google Sign-In Dialog */}
+      <Dialog open={openDialog} onOpenChange={setOpenDialog}>
         <DialogContent>
           <DialogHeader>
             <DialogDescription>
-              <img className='w-10' src='/logo.svg' />
-              <h2 className='font-bold text-lg mt-7'>Sign In with Google</h2>
-              <p>Sign In to the app to proceed with Google authentication securely!</p>
+              <img className="w-10" src="/logo.svg" />
+              <h2 className="font-bold text-lg mt-7">Sign In with Google</h2>
+              <p className="text-sm sm:text-base">
+                Sign In to the app to proceed with Google authentication securely!
+              </p>
               <Button
                 onClick={login}
-                className='w-full mt-5 flex gap-4 itms-center hover:cursor-pointer'>
-
-                <FcGoogle />
+                className="w-full mt-5 flex gap-2 items-center"
+              >
+                <FcGoogle className="text-xl" />
                 Sign In with Google
               </Button>
             </DialogDescription>
           </DialogHeader>
         </DialogContent>
       </Dialog>
-    </div>
-
+    </header>
   )
 }
 
