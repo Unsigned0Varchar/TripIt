@@ -31,24 +31,3 @@
 
 ---
 
-📂 Folder Structure
-
-trip-it/
-│
-├── public/                # Static assets
-├── src/                   # Main application source
-│   ├── components/        # Reusable React components
-│   ├── pages/             # Main views
-│   └── services/          # API-related services
-├── .env.local             # API Keys
-├── package.json
-├── vite.config.ts
-└── README.md              # You're here!
-
-📈 Roadmap
-	•	Gemini API integration for travel planning
-	•	Responsive UI with Tailwind & DaisyUI
-	•	Add map integration for destinations
-	•	User authentication (Firebase Auth)
-	•	Trip sharing feature
-	•	Multi-language support
